@@ -18,12 +18,8 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
-        description: 'Servidor de desarrollo'
-      },
-      {
-        url: 'https://api.destelloperu.com',
-        description: 'Servidor de producción'
+        url: 'http://20.245.229.182:3000',
+        description: 'Servidor de Destello Perú'
       }
     ],
     components: {

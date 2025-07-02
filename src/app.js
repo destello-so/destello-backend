@@ -139,9 +139,9 @@ const PORT = process.env.PORT || 3000;
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
-  console.log(`📚 Documentación: http://localhost:${PORT}/api-docs`);
-  console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
+  console.log(`🌐 URL: http://20.245.229.182:${PORT}`);
+  console.log(`📚 Documentación: http://20.245.229.182:${PORT}/api-docs`);
+  console.log(`🏥 Health Check: http://20.245.229.182:${PORT}/health`);
   console.log(`🎯 Ambiente: ${process.env.NODE_ENV || 'development'}`);
 });
 
