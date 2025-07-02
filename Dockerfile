@@ -7,6 +7,9 @@ RUN npm install --production
 
 COPY . .
 
+# Asegurar que la carpeta public esté disponible
+RUN mkdir -p public
+
 ENV NODE_ENV=production
 ENV PORT=3000
 
