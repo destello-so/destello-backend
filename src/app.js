@@ -36,14 +36,57 @@ const limiter = rateLimit({
   }
 });
 
-// Middlewares de seguridad
-app.use(helmet());
-app.use(cors());
+// Middlewares de seguridad con configuración permisiva
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "http:", "https:"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"]
+    }
+  }
+}));
+
+// Configuración de CORS más permisiva
+app.use(cors({
+  origin: '*', // Permite cualquier origen
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  credentials: false,
+  optionsSuccessStatus: 200,
+  preflightContinue: false
+}));
+
 app.use(limiter);
 
 // Middlewares de parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware para headers adicionales
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 // Middleware de logging simple
 app.use((req, res, next) => {
@@ -54,6 +97,9 @@ app.use((req, res, next) => {
 // Middleware de formateo de respuestas
 app.use(responseFormatter);
 
+// Servir archivos estáticos
+app.use(express.static('public'));
+
 // Documentación de la API con Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
   customCss: '.swagger-ui .topbar { display: none }',
@@ -63,8 +109,16 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
     docExpansion: 'list',
     filter: true,
     showRequestHeaders: true,
-    tryItOutEnabled: true
-  }
+    tryItOutEnabled: true,
+    persistAuthorization: true
+  },
+  customSiteTitle: 'Destello Perú API',
+  customfavIcon: '/favicon.ico',
+  customCssUrl: 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css',
+  customJs: [
+    'https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js',
+    'https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js'
+  ]
 }));
 
 // Ruta para obtener la especificación OpenAPI en JSON
@@ -138,10 +192,10 @@ const PORT = process.env.PORT || 3000;
 
 // Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-  console.log(`🌐 URL: http://20.245.229.182:${PORT}`);
+  console.log(`�� Servidor corriendo en puerto ${PORT}`);
+  console.log(`�� URL: http://20.245.229.182:${PORT}`);
   console.log(`📚 Documentación: http://20.245.229.182:${PORT}/api-docs`);
-  console.log(`🏥 Health Check: http://20.245.229.182:${PORT}/health`);
+  console.log(`�� Health Check: http://20.245.229.182:${PORT}/health`);
   console.log(`🎯 Ambiente: ${process.env.NODE_ENV || 'development'}`);
 });
 
