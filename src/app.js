@@ -43,12 +43,12 @@ app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'", "https://cdn.jsdelivr.net"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net"],
-      imgSrc: ["'self'", "data:", "https:"],
+      defaultSrc: ["'self'", "http:"],
+      styleSrc: ["'self'", "'unsafe-inline'", "http://fonts.googleapis.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      imgSrc: ["'self'", "data:", "http:", "https:"],
       connectSrc: ["'self'", "http:", "https:"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
+      fontSrc: ["'self'", "http://fonts.gstatic.com"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
       frameSrc: ["'none'"]
@@ -111,7 +111,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
     showRequestHeaders: true,
     tryItOutEnabled: true,
     persistAuthorization: true
-  }
+  },
+  customCssUrl: '/api-docs/swagger-ui.css',
+  customJs: [
+    '/api-docs/swagger-ui-bundle.js',
+    '/api-docs/swagger-ui-standalone-preset.js'
+  ]
 }));
 
 // Ruta para obtener la especificación OpenAPI en JSON
