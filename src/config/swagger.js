@@ -18,8 +18,12 @@ const options = {
     },
     servers: [
       {
+        url: 'http://localhost:3000',
+        description: 'Servidor Local (HTTP)'
+      },
+      {
         url: 'http://20.245.229.182:3000',
-        description: 'Servidor de Destello Perú'
+        description: 'Servidor Azure (HTTP)'
       }
     ],
     components: {
@@ -559,6 +563,10 @@ const options = {
             }
           }
         }
+      },
+      externalDocs: {
+        description: 'Documentación adicional',
+        url: 'http://20.245.229.182:3000/api-docs'
       }
     },
     tags: [
@@ -612,7 +620,7 @@ const options = {
       }
     ]
   },
-  apis: ['./src/routes/*.js', './src/controllers/*.js'] // Archivos donde buscar documentación
+  apis: ['./src/routes/*.js', './src/controllers/*.js']
 };
 
 const specs = swaggerJsdoc(options);
