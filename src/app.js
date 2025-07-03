@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
 require('dotenv').config();
 
 // Importar configuraciones
@@ -100,24 +101,22 @@ app.use(responseFormatter);
 // Servir archivos estáticos
 app.use(express.static('public'));
 
-// Documentación de la API con Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'Destello Perú API Documentation',
-  customfavIcon: '/favicon.ico',
-  swaggerOptions: {
-    docExpansion: 'list',
-    filter: true,
-    showRequestHeaders: true,
-    tryItOutEnabled: true,
-    persistAuthorization: true
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Destello Perú API',
+      version: '1.0.0',
+      description: 'API completa para Destello Perú - E-commerce con funcionalidades de red social',
+    },
+    servers: [{ url: 'http://20.245.229.182:3000', description: 'Servidor de Destello Perú' }],
   },
-  customCssUrl: '/api-docs/swagger-ui.css',
-  customJs: [
-    '/api-docs/swagger-ui-bundle.js',
-    '/api-docs/swagger-ui-standalone-preset.js'
-  ]
-}));
+  apis: ['./src/routes/*.js'],
+};
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+// Documentación de la API con Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Ruta para obtener la especificación OpenAPI en JSON
 app.get('/api-docs.json', (req, res) => {
