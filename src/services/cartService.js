@@ -11,15 +11,16 @@ class CartService {
       cart = await Cart.create({ userId, items: [] });
     }
 
-    // Filtrar productos inactivos o sin stock
-    cart.items = cart.items.filter(item => 
-      item.productId && 
-      item.productId.isActive && 
-      item.productId.stockQty > 0
+    const originalLength = cart.items.length;
+    cart.items = cart.items.filter(
+      item =>
+        item.productId &&
+        item.productId.isActive &&
+        item.productId.stockQty > 0
     );
 
-    // Actualizar carrito si se removieron items
-    if (cart.items.length !== cart.items.length) {
+    // Guardar solo si realmente se removieron elementos
+    if (cart.items.length !== originalLength) {
       await cart.save();
     }
 
@@ -72,10 +73,10 @@ class CartService {
     return await this.getCart(userId);
   }
 
-  // Actualizar cantidad de un item
-  async updateItem(userId, itemId, quantity) {
+  // Actualizar cantidad de un producto en el carrito (usa productId)
+  async updateItem(userId, productId, quantity) {
     if (quantity <= 0) {
-      return await this.removeItem(userId, itemId);
+      return await this.removeItem(userId, productId);
     }
 
     const cart = await Cart.findOne({ userId });
@@ -85,14 +86,16 @@ class CartService {
       throw error;
     }
 
-    const item = cart.items.id(itemId);
+    const item = cart.items.find(
+      i => i.productId.toString() === productId.toString()
+    );
     if (!item) {
       const error = new Error('Item no encontrado en el carrito');
       error.statusCode = 404;
       throw error;
     }
 
-    const product = await Product.findById(item.productId);
+    const product = await Product.findById(productId);
     if (!product || !product.isActive) {
       const error = new Error('Producto no disponible');
       error.statusCode = 400;
@@ -113,8 +116,8 @@ class CartService {
     return await this.getCart(userId);
   }
 
-  // Remover item del carrito
-  async removeItem(userId, itemId) {
+  // Remover producto del carrito (usa productId)
+  async removeItem(userId, productId) {
     const cart = await Cart.findOne({ userId });
     if (!cart) {
       const error = new Error('Carrito no encontrado');
@@ -122,14 +125,16 @@ class CartService {
       throw error;
     }
 
-    const item = cart.items.id(itemId);
-    if (!item) {
+    const index = cart.items.findIndex(
+      i => i.productId.toString() === productId.toString()
+    );
+    if (index === -1) {
       const error = new Error('Item no encontrado en el carrito');
       error.statusCode = 404;
       throw error;
     }
 
-    item.remove();
+    cart.items.splice(index, 1);
     cart.updatedAt = new Date();
     await cart.save();
 
