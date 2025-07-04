@@ -25,6 +25,41 @@ class UserController {
     }
   }
 
+  // NUEVO: Obtener perfil completo de cualquier usuario
+  async getUserProfile(req, res) {
+    try {
+      const profileUserId = req.params.id;
+      const viewerId = req.user._id;
+
+      const profile = await userService.getFullProfile(profileUserId, viewerId);
+
+      return res.success({ profile }, 'Perfil de usuario obtenido exitosamente');
+    } catch (error) {
+      if (error.statusCode === 404) {
+        return res.notFound('Usuario no encontrado');
+      }
+      console.error(error);
+      return res.internal('Error al obtener perfil de usuario');
+    }
+  }
+
+  // NUEVO: Vista de inicio personalizada
+  async getHomeData(req, res) {
+    try {
+      const targetUserId = req.params.id;
+
+      const home = await userService.getHomeData(targetUserId);
+
+      return res.success({ home }, 'Vista de inicio generada exitosamente');
+    } catch (error) {
+      if (error.statusCode === 404) {
+        return res.notFound('Usuario no encontrado');
+      }
+      console.error(error);
+      return res.internal('Error al generar la vista de inicio');
+    }
+  }
+
   /**
    * PUT /api/users/profile
    * Actualizar datos del perfil del usuario autenticado
