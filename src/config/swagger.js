@@ -562,6 +562,74 @@ const options = {
               }
             }
           }
+        },
+        // === NUEVO SCHEMA PARA PERFIL COMPLETO ===
+        UserProfile: {
+          type: 'object',
+          properties: {
+            user: { $ref: '#/components/schemas/User' },
+            social: {
+              type: 'object',
+              properties: {
+                followers: { type: 'integer', example: 23 },
+                following: { type: 'integer', example: 15 },
+                isFollowing: { type: 'boolean', example: false }
+              }
+            },
+            posts: {
+              type: 'object',
+              properties: {
+                stats: { $ref: '#/components/schemas/PostStats' },
+                recent: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/Post' }
+                }
+              }
+            },
+            reviews: {
+              type: 'object',
+              properties: {
+                total: { type: 'integer', example: 7 },
+                averageRating: { type: 'number', example: 4.3 },
+                recent: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/Review' }
+                }
+              }
+            },
+            comments: {
+              type: 'object',
+              properties: {
+                total: { type: 'integer', example: 15 }
+              }
+            },
+            commerce: {
+              type: 'object',
+              nullable: true,
+              properties: {
+                cart: {
+                  type: 'object',
+                  properties: {
+                    total: { type: 'number', example: 120.5 },
+                    itemCount: { type: 'integer', example: 4 },
+                    items: { type: 'integer', example: 3 }
+                  }
+                },
+                wishlist: { $ref: '#/components/schemas/WishlistStats' },
+                orders: {
+                  type: 'object',
+                  properties: {
+                    total: { type: 'integer', example: 5 },
+                    totalSpent: { type: 'number', example: 800.0 },
+                    recent: {
+                      type: 'array',
+                      items: { $ref: '#/components/schemas/Order' }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       },
       externalDocs: {

@@ -75,6 +75,94 @@ router.get('/profile', userController.getProfile);
 
 /**
  * @swagger
+ * /api/users/{id}/profile:
+ *   get:
+ *     summary: Obtener perfil de un usuario
+ *     description: |
+ *       Retorna información completa del perfil de cualquier usuario.  
+ *       Si el **id** corresponde al usuario autenticado, la respuesta incluye datos privados de comercio (carrito, wishlist y órdenes).
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^[0-9a-fA-F]{24}$'
+ *         description: ID del usuario cuyo perfil se solicita
+ *     responses:
+ *       200:
+ *         description: Perfil obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/SuccessResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         profile:
+ *                           $ref: '#/components/schemas/UserProfile'
+ *             example:
+ *               success: true
+ *               message: "Perfil de usuario obtenido exitosamente"
+ *               data:
+ *                 profile:
+ *                   user:
+ *                     _id: "507f1f77bcf86cd799439011"
+ *                     firstName: "Juan"
+ *                     lastName: "Pérez"
+ *                     profilePicture: "https://example.com/avatar.jpg"
+ *                     createdAt: "2024-01-15T10:30:00.000Z"
+ *                   social:
+ *                     followers: 23
+ *                     following: 15
+ *                     isFollowing: false
+ *                   posts:
+ *                     stats:
+ *                       totalPosts: 42
+ *                       recentPosts: 5
+ *                       averagePostsPerWeek: 2.5
+ *                       activityLevel: "active"
+ *                     recent: []
+ *                   reviews:
+ *                     total: 7
+ *                     averageRating: 4.3
+ *                     recent: []
+ *                   comments:
+ *                     total: 15
+ *                   commerce: null
+ *               timestamp: "2024-01-15T10:30:00.000Z"
+ *       401:
+ *         description: No autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get('/:id/profile',
+  validateParams(paramIdSchema),
+  userController.getUserProfile
+);
+
+/**
+ * @swagger
  * /api/users/profile:
  *   put:
  *     summary: Actualizar perfil del usuario
@@ -482,6 +570,68 @@ router.put('/addresses/:id',
 router.delete('/addresses/:id', 
   validateParams(paramIdSchema),
   userController.deleteAddress
+);
+
+/**
+ * @swagger
+ * /api/users/{id}/home:
+ *   get:
+ *     summary: Obtener datos de la vista de inicio
+ *     description: Devuelve información personalizada para poblar la página de inicio de un usuario (feed, estadísticas, recomendaciones, etc.).
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^[0-9a-fA-F]{24}$'
+ *         description: ID del usuario cuyo inicio se solicita
+ *     responses:
+ *       200:
+ *         description: Datos obtenidos exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/SuccessResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         home:
+ *                           type: object
+ *             example:
+ *               success: true
+ *               message: "Vista de inicio generada exitosamente"
+ *               data:
+ *                 home: { "sample": "estructura homeData" }
+ *               timestamp: "2024-01-15T10:30:00.000Z"
+ *       401:
+ *         description: No autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get('/:id/home',
+  validateParams(paramIdSchema),
+  userController.getHomeData
 );
 
 module.exports = router;
