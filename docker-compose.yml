@@ -26,6 +26,17 @@ services:
     command: ["node", "src/app.js"]
     networks: [app-net]
 
+  frontend:
+    build:
+      context: ../destello-frontend
+      dockerfile: Dockerfile
+    container_name: destello-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks: [app-net]
+
 networks:
   app-net:
 
